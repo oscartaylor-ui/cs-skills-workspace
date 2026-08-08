@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS Prompt Dashboard</title>
+  <style>
+    :root {
+      --artifact-background: var(--theme-background, #ffffff);
+      --artifact-background-light: var(--theme-background-light, #f7f8fa);
+      --artifact-background-mid: var(--theme-background-mid, #eef0f4);
+      --artifact-border-light: var(--theme-border-light, #e6e8ee);
+      --artifact-border-dark: var(--theme-border-dark, #d3d7e0);
+      --artifact-text-primary: var(--theme-text-primary, #1d2b2c);
+      --artifact-text-secondary: var(--theme-text-secondary, #5c6b6d);
+      --artifact-selected: var(--theme-selected, #eceaf6);
+
+      --artifact-accent: #681EC8;
+      --artifact-accent-2: #DF37A0;
+      --artifact-accent-soft: rgba(104,30,200,0.10);
+      --artifact-accent-border: rgba(104,30,200,0.22);
+
+      --artifact-code-bg: #0f172a;
+      --artifact-code-text: #e2e8f0;
+      --artifact-code-border: rgba(148,163,184,0.18);
+
+      --artifact-danger: #c8324b;
+      --artifact-danger-soft: rgba(200,50,75,0.10);
+
+      --artifact-shadow: 0 1px 2px rgba(15,23,42,0.05);
+      --artifact-shadow-pop: 0 12px 32px rgba(15,23,42,0.14);
+      --artifact-radius: 16px;
+    }
+
+    html[data-theme='dark'] {
+      --artifact-accent-soft: rgba(150,110,235,0.18);
+      --artifact-accent-border: rgba(150,110,235,0.35);
+      --artifact-code-bg: #0b1220;
+      --artifact-code-text: #dbe4f0;
+      --artifact-danger: #ff8197;
+      --artifact-danger-soft: rgba(255,129,151,0.14);
+      --artifact-shadow: 0 1px 2px rgba(0,0,0,0.4);
+      --artifact-shadow-pop: 0 12px 32px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--artifact-text-primary);
+      background: var(--artifact-background);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    .wrap {
+      width: min(880px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 64px;
+    }
+
+    /* ---- Header ---- */
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--artifact-accent);
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      margin: 8px 0 0;
+      color: var(--artifact-text-secondary);
+      font-size: 0.98rem;
+      max-width: 620px;
+    }
+
+    /* ---- Buttons ---- */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+    }
+    button:active { transform: translateY(1px); }
+    button:focus-visible {
+      outline: 2px solid var(--artifact-accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--artifact-accent), var(--artifact-accent-2));
+      color: #ffffff;
+      font-weight: 600;
+      padding: 11px 16px;
+      font-size: 0.92rem;
+      box-shadow: var(--artifact-shadow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--artifact-text-secondary);
+      border: 1px solid var(--artifact-border-dark);
+      padding: 8px 12px;
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+    .btn-ghost:hover {
+      background: var(--artifact-background-light);
+      color: var(--artifact-text-primary);
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      color: var(--artifact-text-secondary);
+      padding: 7px 11px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      border: 1px solid transparent;
+    }
+    .icon-btn:hover {
+      background: var(--artifact-background-mid);
+      color: var(--artifact-text-primary);
+    }
+    .icon-btn.danger:hover {
+      background: var(--artifact-danger-soft);
+      color: var(--artifact-danger);
+    }
+    .icon-btn svg { width: 15px; height: 15px; }
+
+    /* ---- Toolbar ---- */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 26px 0 16px;
+      flex-wrap: wrap;
+    }
+    .search {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--artifact-text-primary);
+      background: var(--artifact-background-light);
+      border: 1px solid var(--artifact-border-light);
+      border-radius: 10px;
+      padding: 10px 12px 10px 36px;
+    }
+    .search input:focus {
+      outline: none;
+      border-color: var(--artifact-accent-border);
+      background: var(--artifact-background);
+    }
+    .search svg {
+      position: absolute;
+      left: 11px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      color: var(--artifact-text-secondary);
+      pointer-events: none;
+    }
+    .count {
+      font-size: 0.82rem;
+      color: var(--artifact-text-secondary);
+      white-space: nowrap;
+    }
+
+    /* ---- Cards ---- */
+    .list { display: grid; gap: 14px; }
+
+    .card {
+      background: var(--artifact-background);
+      border: 1px solid var(--artifact-border-light);
+      border-radius: var(--artifact-radius);
+      box-shadow: var(--artifact-shadow);
+      overflow: hidden;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card.editing { border-color: var(--artifact-accent-border); box-shadow: var(--artifact-shadow-pop); }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+    }
+    .card-head .title-zone { flex: 1; min-width: 0; cursor: pointer; }
+    .card-title {
+      margin: 0;
+      font-size: 1.04rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .twist {
+      color: var(--artifact-text-secondary);
+      transition: transform 0.18s ease;
+      flex: 0 0 auto;
+    }
+    .card.open .card-title .twist { transform: rotate(90deg); }
+    .card-desc {
+      margin: 5px 0 0;
+      color: var(--artifact-text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .card-actions { display: flex; gap: 4px; flex: 0 0 auto; }
+
+    .card-body {
+      display: none;
+      padding: 0 18px 18px;
+    }
+    .card.open .card-body { display: block; }
+
+    pre.prompt-text {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--artifact-code-bg);
+      color: var(--artifact-code-text);
+      border: 1px solid var(--artifact-code-border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      max-height: 360px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .copy-row { margin-top: 12px; }
+
+    /* ---- Edit form ---- */
+    .edit-form { display: grid; gap: 12px; padding: 4px 0 2px; }
+    .field label {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--artifact-text-secondary);
+      margin-bottom: 5px;
+    }
+    .field input, .field textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--artifact-text-primary);
+      background: var(--artifact-background-light);
+      border: 1px solid var(--artifact-border-light);
+      border-radius: 10px;
+      padding: 10px 12px;
+      resize: vertical;
+    }
+    .field textarea {
+      min-height: 260px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .field input:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--artifact-accent-border);
+      background: var(--artifact-background);
+    }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ---- Empty state ---- */
+    .empty {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--artifact-text-secondary);
+      border: 1px dashed var(--artifact-border-dark);
+      border-radius: var(--artifact-radius);
+    }
+    .empty p { margin: 0 0 14px; }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 22px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--artifact-text-primary);
+      color: var(--artifact-background);
+      padding: 11px 18px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: var(--artifact-shadow-pop);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 50;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .footer-note {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--artifact-text-secondary);
+      font-size: 0.82rem;
+    }
+    .footer-note button {
+      background: none; border: none; padding: 0;
+      color: var(--artifact-accent);
+      font: inherit; text-decoration: underline; cursor: pointer;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+
+    @media (max-width: 600px) {
+      .card-head { flex-wrap: wrap; }
+      .card-actions { width: 100%; justify-content: flex-end; }
+    }
+
+    @media print {
+      body { margin: 0; padding: 0.4in 0.6in; background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .wrap { width: 100% !important; }
+      .toolbar, .card-actions, .copy-row, .topbar > div:last-child, .footer-note button { display: none !important; }
+      button, [role="button"] { display: none !important; }
+      .card { break-inside: avoid; box-shadow: none !important; border: 1px solid rgba(0,0,0,0.12); }
+      .card-body { display: block !important; }
+      pre.prompt-text { max-height: none !important; overflow: visible !important; background: #f4f4f4; color: #111; border: 1px solid rgba(0,0,0,0.12); }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <div>
+        <span class="eyebrow">CS prompt dashboard</span>
+        <h1>Prompt library</h1>
+        <p class="lead">Your editable prompts for turning messy notes into structured outputs. Edits save automatically in this browser.</p>
+      </div>
+      <div>
+        <button class="btn-primary" id="addBtn">+ New prompt</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" placeholder="Search prompts..." autocomplete="off" />
+      </div>
+      <span class="count" id="countLabel"></span>
+    </div>
+
+    <div class="list" id="list"></div>
+
+    <p class="footer-note">
+      Stored locally in your browser &middot;
+      <button id="resetBtn" type="button">Reset to defaults</button>
+    </p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Seed defaults (read once on first load, then managed in localStorage) -->
+  <div id="seeds" hidden>
+    <article class="seed">
+      <span class="seed-title">Note conversion prompt</span>
+      <span class="seed-desc">Turns rough daily notes into five structured outputs.</span>
+      <pre class="seed-body">You are going to process notes into 5 formats. Read the instructions and then ask for the notes when you are ready.
+
+1. !!Confluence Notes!!
+
+Sort the notes into these categories, include resident-specific anecdotes, names and personal details when necessary but be concise overall.
+
+- Morning Plan &amp; Direction
+- 1:1 and Targeted Interactions
+- Small / Hallway Interactions
+- Group / Social Interaction
+- Technical Issues 
+
+2. !!House Daily Activity Spreadsheet!!
+
+List the information for each interaction as follows
+
+- Resident Name(s) and room number
+- Session Type (1:1 or Group)
+- Time
+- Activity / Focus Area (1-2 sentences)
+
+3. !!JIRA Tickets!!
+
+Scan the notes for anything that looks like: failures, incorrect behaviour, confusing behaviour, long delays, refusals, or inconsistent responses.
+Group related observations into a small number of distinct issues (ideally 1–3).
+
+For each issue, fill these fields (in this order):
+
+Title* – 1 short line summarising the core problem (no extra context).
+Expected Behaviour* – 1–2 sentences: what Abi should have done.
+Actual Behaviour* – 2–3 sentences max: what happened instead, combining similar observations and keeping only key details (symptoms, frequency, rough timing).
+Abi Name* – Use the Abi identifier from your notes (e.g. gabi-19-prod).
+Date and time* – Use specific times from the notes if present; if the calendar date is missing, say so briefly.
+Location – Only include what’s explicitly in the notes; if not specified, write “Not specified in notes”.
+Software version* – Use the version given in the request (e.g. v16.1.2).
+Be concise
+
+Avoid storytelling and resident-specific anecdotes unless they’re necessary to reproduce the bug.
+Prefer compressed phrasing: combine repeated occurrences into a single concise description (e.g. “played wrong song 3 times” instead of listing every attempt).
+Keep each bug description short enough to skim: no bullet lists inside fields, no more than ~4 sentences in Actual Behaviour.
+
+4. !!Epsilon3 Notes!!
+
+These will be extremely concise.
+
+- List of Staff Request for Abi Usage
+- Details of Resident Interactions
+- Issues Observed with Abi or Influencer Phone
+
+5. !!Daily 2 Minute Loom Script!!
+
+Generate a 1-2 minute script for a Loom recording to be read aloud.</pre>
+    </article>
+
+    <article class="seed">
+      <span class="seed-title">Weekly report prompt</span>
+      <span class="seed-desc">Builds a weekly summary from 5 days of Confluence notes. Omits resident names and identifiers for privacy.</span>
+      <pre class="seed-body">Ask for the URL's to 5 days worth of confluence notes, do not proceed until they have been linked. Reference them and write a the weekly report using information from EACH day, do not skip a day.
+
+Once you have the necessary information rewrite the confluence notes you discover according to the following guidelines:
+
+1. Overall structure
+Clear subject line
+
+Format: “Weekly Report — Abi Session Summary” (optionally add facility name and date).
+Warm greeting + 1–2 line overview
+
+Start with “Hi Team,” and a short, friendly summary of the week’s visit and overall mood (e.g. joyful, calm, engaging).
+High-level session summary block (optional but recommended)
+
+At the top, list key facts in a compact mini-table or bullet block:
+Facility name
+Date
+Duration
+Number of resident participants
+Resident engagement score
+Group activities and 1:1 activities (short phrases).
+Separate sections for 1:1 and group activities
+
+Use headings like:
+“1:1 Sessions” / “One-on-One Interactions”
+“Group Session Highlights” / “Mini Group Session”
+Resident stories as short vignettes
+
+Label residents as “Resident A/B/C” (no identifying details).
+For each resident, 2–3 short dot points:
+What activity happened (music, tai chi, bubbles, conversation).
+What they said or expressed (use quoted phrases sparingly but powerfully).
+Any observable impact (e.g. more engaged than usual, reminiscing, relaxed).
+Group section as a highlight reel
+
+4–6 bullet points describing:
+Key activities (songs, tai chi, trivia, bubbles).
+Notable engagement shifts (e.g. usually-withdrawn resident joining in).
+Emotional tone (laughter, calm, energy).
+Closing reflection + next steps
+
+2–3 sentences tying it together:
+Emphasise connection, wellbeing, and meaningful engagement.
+Invite questions: “If you have any questions or would like to discuss the session further, please don’t hesitate to reach out.”
+Optionally add a feedback link sentence in a single short line.
+
+2. Wording and tone
+Natural, warm, non-corporate
+
+Use Australian English and everyday language, avoiding jargon or “corporate speak”.
+Aim for a friendly, human tone like in the examples:
+“Abi had a wonderful time at the home this week…”
+“It was another joyful and engaging session…”
+Person-centred and strengths-based
+
+Focus on what residents enjoyed, chose, or expressed:
+“Shared stories about family celebrations…”
+“Proudly talked about trophies that she’d won…”
+Emphasise moments of connection rather than deficits or challenges.
+Concrete but concise
+
+Use short dot points rather than long paragraphs; each point should capture one idea (activity, quote, or outcome).
+A 1:1 vignette is ideally 2–3 bullets; a group section 4–6 bullets.
+Privacy-preserving
+
+Never use resident or staff names, room numbers, or other identifiers; stick to “Resident A/B/C” and general descriptors of the setting.
+Consistent framing week to week
+
+Keep headings, ordering (overview → 1:1 → group → reflection), and subject line consistent so partners quickly recognise the format and know where to find what.
+
+3. Length guidance
+Aim for one screen of text in an email client:
+Brief header facts block.
+2–3 short sections of bullets.
+2–3 sentence closing.
+Internally we typically target a 5–10 line summary per major section rather than an essay.</pre>
+    </article>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'cs_prompt_dashboard_v1';
+
+    /* ---------- Data layer ---------- */
+    function readSeeds() {
+      return [...document.querySelectorAll('#seeds .seed')].map((el, i) => ({
+        id: 'seed-' + i + '-' + Date.now(),
+        title: el.querySelector('.seed-title').textContent.trim(),
+        desc: el.querySelector('.seed-desc').textContent.trim(),
+        body: el.querySelector('.seed-body').textContent
+      }));
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      const seeds = readSeeds();
+      save(seeds);
+      return seeds;
+    }
+
+    function save(data) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+    }
+
+    let prompts = load();
+    let openId = prompts.length ? prompts[0].id : null;
+    let editingId = null;
+    let query = '';
+
+    /* ---------- Helpers ---------- */
+    const uid = () => 'p-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 1700);
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (e) {}
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.style.position = 'fixed';
+      area.style.left = '-9999px';
+      document.body.appendChild(area);
+      area.focus(); area.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      area.remove();
+      return ok;
+    }
+
+    /* ---------- Render ---------- */
+    const list = document.getElementById('list');
+
+    function render() {
+      const q = query.trim().toLowerCase();
+      const filtered = prompts.filter(p =>
+        !q || p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.body.toLowerCase().includes(q)
+      );
+
+      document.getElementById('countLabel').textContent =
+        prompts.length + (prompts.length === 1 ? ' prompt' : ' prompts') +
+        (q ? ' · ' + filtered.length + ' shown' : '');
+
+      if (!prompts.length) {
+        list.innerHTML = `<div class="empty"><p>No prompts yet.</p><button class="btn-primary" onclick="window.__add()">+ Create your first prompt</button></div>`;
+        return;
+      }
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty"><p>No prompts match “${esc(query)}”.</p></div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(p => p.id === editingId ? editCard(p) : viewCard(p)).join('');
+      bind();
+    }
+
+    function viewCard(p) {
+      const open = p.id === openId;
+      return `
+        <article class="card ${open ? 'open' : ''}" data-id="${p.id}">
+          <div class="card-head">
+            <div class="title-zone" data-toggle="${p.id}">
+              <h3 class="card-title">
+                <svg class="twist" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                ${esc(p.title) || 'Untitled prompt'}
+              </h3>
+              ${p.desc ? `<p class="card-desc">${esc(p.desc)}</p>` : ''}
+            </div>
+            <div class="card-actions">
+              <button class="icon-btn" data-copy="${p.id}" title="Copy prompt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+              <button class="icon-btn" data-edit="${p.id}" title="Edit prompt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Edit
+              </button>
+              <button class="icon-btn danger" data-delete="${p.id}" title="Delete prompt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <pre class="prompt-text">${esc(p.body)}</pre>
+            <div class="copy-row">
+              <button class="btn-primary" data-copy="${p.id}">Copy prompt</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function editCard(p) {
+      return `
+        <article class="card editing open" data-id="${p.id}">
+          <div class="card-body" style="display:block; padding:18px;">
+            <div class="edit-form">
+              <div class="field">
+                <label>Title</label>
+                <input type="text" data-f="title" value="${esc(p.title)}" placeholder="Prompt name" />
+              </div>
+              <div class="field">
+                <label>Description</label>
+                <input type="text" data-f="desc" value="${esc(p.desc)}" placeholder="Short summary of what this prompt does" />
+              </div>
+              <div class="field">
+                <label>Prompt text</label>
+                <textarea data-f="body" placeholder="Paste or write the prompt here...">${esc(p.body)}</textarea>
+              </div>
+              <div class="form-actions">
+                <button class="btn-ghost" data-cancel="${p.id}">Cancel</button>
+                <button class="btn-primary" data-save="${p.id}">Save</button>
+              </div>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    /* ---------- Event binding ---------- */
+    function bind() {
+      list.querySelectorAll('[data-toggle]').forEach(el =>
+        el.addEventListener('click', () => {
+          const id = el.dataset.toggle;
+          openId = (openId === id) ? null : id;
+          render();
+        }));
+
+      list.querySelectorAll('[data-copy]').forEach(el =>
+        el.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const p = prompts.find(x => x.id === el.dataset.copy);
+          if (!p) return;
+          const ok = await copyText(p.body);
+          toast(ok ? 'Copied to clipboard' : 'Copy failed');
+        }));
+
+      list.querySelectorAll('[data-edit]').forEach(el =>
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editingId = el.dataset.edit;
+          openId = editingId;
+          render();
+          const ta = list.querySelector('.card.editing textarea');
+          if (ta) ta.focus();
+        }));
+
+      list.querySelectorAll('[data-delete]').forEach(el =>
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const p = prompts.find(x => x.id === el.dataset.delete);
+          if (!p) return;
+          if (confirm(`Delete “${p.title || 'this prompt'}”? This cannot be undone.`)) {
+            prompts = prompts.filter(x => x.id !== p.id);
+            save(prompts);
+            render();
+            toast('Prompt deleted');
+          }
+        }));
+
+      list.querySelectorAll('[data-save]').forEach(el =>
+        el.addEventListener('click', () => {
+          const card = el.closest('.card');
+          const id = el.dataset.save;
+          const p = prompts.find(x => x.id === id);
+          if (!p) return;
+          p.title = card.querySelector('[data-f="title"]').value.trim();
+          p.desc = card.querySelector('[data-f="desc"]').value.trim();
+          p.body = card.querySelector('[data-f="body"]').value;
+          editingId = null;
+          save(prompts);
+          render();
+          toast('Saved');
+        }));
+
+      list.querySelectorAll('[data-cancel]').forEach(el =>
+        el.addEventListener('click', () => {
+          const id = el.dataset.cancel;
+          const p = prompts.find(x => x.id === id);
+          // If a brand-new empty prompt is cancelled, remove it.
+          if (p && !p.title && !p.desc && !p.body) {
+            prompts = prompts.filter(x => x.id !== id);
+            save(prompts);
+          }
+          editingId = null;
+          render();
+        }));
+    }
+
+    /* ---------- Top-level actions ---------- */
+    function addPrompt() {
+      const p = { id: uid(), title: '', desc: '', body: '' };
+      prompts.unshift(p);
+      save(prompts);
+      editingId = p.id;
+      openId = p.id;
+      query = '';
+      document.getElementById('searchInput').value = '';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const ta = list.querySelector('.card.editing input[data-f="title"]');
+      if (ta) ta.focus();
+    }
+    window.__add = addPrompt;
+
+    document.getElementById('addBtn').addEventListener('click', addPrompt);
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      query = e.target.value;
+      render();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Reset to the original default prompts? Your custom edits and added prompts will be removed.')) {
+        prompts = readSeeds();
+        save(prompts);
+        editingId = null;
+        openId = prompts[0] ? prompts[0].id : null;
+        query = '';
+        document.getElementById('searchInput').value = '';
+        render();
+        toast('Reset to defaults');
+      }
+    });
+
+    render();
+
+    /* ---------- PDF export ---------- */
+    if (window.GleanBridge) {
+      window.GleanBridge.postMessage({
+        actionId: 'export-pdf',
+        type: 'glean-add-menu',
+        metadata: { label: 'Export as PDF', icon: 'export' }
+      });
+      window.GleanBridge.onMessage('action', function (data) {
+        if (data.actionId === 'export-pdf') window.print();
+      });
+    }
+  </script>
+</body>
+</html>
