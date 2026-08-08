@@ -1,1 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS Daily Workflow Prompts</title>
+  <style>
+    :root {
+      --bg: var(--theme-background, #ffffff);
+      --bg-light: var(--theme-background-light, #f7f8fa);
+      --bg-mid: var(--theme-background-mid, #eef0f4);
+      --border: var(--theme-border-light, #e6e8ee);
+      --border-strong: var(--theme-border-dark, #d3d7e0);
+      --text: var(--theme-text-primary, #1d2b2c);
+      --muted: var(--theme-text-secondary, #5c6b6d);
+      --accent: #681ec8;
+      --accent-2: #df37a0;
+      --accent-soft: rgba(104, 30, 200, .10);
+      --code: #0f172a;
+      --code-text: #e2e8f0;
+      --shadow: 0 1px 2px rgba(15, 23, 42, .05);
+      --radius: 16px;
+    }
+    html[data-theme='dark'] { --accent-soft: rgba(150, 110, 235, .18); --code: #0b1220; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--text); background: var(--bg); font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .wrap { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 64px; }
+    .eyebrow { display: inline-block; margin-bottom: 8px; color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.2rem); letter-spacing: -.025em; }
+    .lead { max-width: 700px; margin: 8px 0 0; color: var(--muted); }
+    .workflow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 28px 0 20px; }
+    .flow-step { position: relative; display: block; padding: 12px; border: 1px solid rgba(104, 30, 200, .30); border-radius: 12px; background: var(--accent-soft); color: var(--muted); font-size: .82rem; text-decoration: none; transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease; }
+    .flow-step:hover { border-color: var(--accent); box-shadow: 0 5px 16px rgba(104, 30, 200, .14); transform: translateY(-1px); }
+    .flow-step:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .flow-step strong { display: block; color: var(--accent); font-size: .88rem; }
+    .flow-label { margin: -2px 0 7px; color: var(--accent); font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .notice { margin: 0 0 16px; padding: 13px 15px; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; background: var(--accent-soft); color: var(--text); font-size: .91rem; }
+    .personalisation { margin: 0 0 20px; padding: 17px 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-light); }
+    .personalisation h2 { margin-bottom: 4px; }
+    .personalisation > p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .signals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 13px; }
+    .signal { padding: 11px; border: 1px solid var(--border); border-radius: 11px; background: var(--bg); }
+    .signal strong { display: block; margin-bottom: 3px; color: var(--accent); font-size: .82rem; }
+    .signal span { color: var(--muted); font-size: .8rem; }
+    .list { display: grid; gap: 14px; }
+    .card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); box-shadow: var(--shadow); }
+    .card-head { display: flex; align-items: flex-start; gap: 13px; padding: 17px 18px; cursor: pointer; }
+    .number { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: .84rem; font-weight: 800; }
+    .title-zone { flex: 1; min-width: 0; }
+    h2 { margin: 0; font-size: 1.05rem; letter-spacing: -.01em; }
+    .desc { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+    .chevron { margin-top: 4px; color: var(--muted); transition: transform .18s ease; }
+    .card.open .chevron { transform: rotate(90deg); }
+    .card-body { display: none; padding: 0 18px 18px; }
+    .card.open .card-body { display: block; }
+    .how { margin: 0 0 11px; color: var(--muted); font-size: .9rem; }
+    pre { max-height: 430px; margin: 0; overflow: auto; padding: 16px; border: 1px solid rgba(148, 163, 184, .18); border-radius: 12px; background: var(--code); color: var(--code-text); font: .84rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+    .copy-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .hint { color: var(--muted); font-size: .8rem; }
+    button { border: 0; border-radius: 10px; cursor: pointer; font: inherit; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .copy { padding: 10px 14px; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); font-size: .88rem; font-weight: 650; }
+    .footer { margin-top: 26px; color: var(--muted); text-align: center; font-size: .82rem; }
+    @media (max-width: 700px) { .workflow, .signals { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 460px) { .workflow { grid-template-columns: 1fr; } .copy-row { align-items: flex-start; flex-direction: column; } }
+    @media print { .workflow, .notice { display: none; } .card { break-inside: avoid; box-shadow: none; } .card-body { display: block !important; } .copy-row, .chevron { display: none; } pre { max-height: none; color: #111; background: #f4f4f4; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <span class="eyebrow">Customer Success · Glean workflow</span>
+    <h1>Daily session prompt library</h1>
+    <p class="lead"><strong>Please reach out to Sarah or Oscar for any questions regarding <a href="https://andromedarobotics.slack.com/archives/C0BNU87BAJ2">software bugs or feedback</a>.</strong></p>
 
+    <section class="workflow" aria-label="Workflow order">
+      <a class="flow-step" href="#feedback-card" data-jump="feedback-card"><strong>1. Quick notes feedback</strong>Review and clarify raw notes.</a>
+      <a class="flow-step" href="#organiser-card" data-jump="organiser-card"><strong>2. Daily notes organiser</strong>Create the canonical daily Markdown.</a>
+      <a class="flow-step" href="#tickets-card" data-jump="tickets-card"><strong>3. Ticket generator</strong>Draft tickets from technical issues.</a>
+      <a class="flow-step" href="#email-card" data-jump="email-card"><strong>4. Daily email generator</strong>Create the Lifestyle Manager email.</a>
+    </section>
+
+    <section class="personalisation" aria-labelledby="personalisation-title">
+      <h2 id="personalisation-title">Personalised feedback loop</h2>
+      <p>The feedback prompt asks Glean to use prior, consented feedback as a coaching baseline. It should track trends in note clarity, not retain resident or session details.</p>
+      <div class="signals">
+        <div class="signal"><strong>Progress</strong><span>Call out a recurring habit that has improved since earlier feedback.</span></div>
+        <div class="signal"><strong>Clarity risks</strong><span>Flag repeat gaps such as missing timestamps, context, or recovery steps.</span></div>
+        <div class="signal"><strong>One focus</strong><span>Recommend one practical improvement for the next session, not a new rigid template.</span></div>
+      </div>
+    </section>
+
+    <section class="list">
+      <article class="card open" id="feedback-card">
+        <div class="card-head" role="button" tabindex="0" aria-expanded="true">
+          <span class="number">1</span>
+          <div class="title-zone"><h2>cs-quick-notes-feedback</h2><p class="desc">Use before organising notes to identify missing operational or ticket context.</p></div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="card-body">
+          <p class="how">Paste this into Glean, then replace the placeholder with the session's unedited quick notes. Answer any follow-up questions before moving on.</p>
+          <pre>Use the cs-quick-notes-feedback skill to review my Customer Success quick notes below.
+
+Create the required document Canvas by copying my notes exactly first. Preserve all wording, timestamps, line breaks, headings, bullets, ordering, and shorthand; do not clean up, rewrite, or summarise the notes.
+
+Then review the notes for useful detail and for missing or unclear information that would affect daily notes, ticket drafting, or Abi performance review. In particular, check technical issues for enough behavioural context, timestamps, what Abi was doing immediately before the issue, who was involved, observable incorrect behaviour, and attempted recovery. Ask the skill's clarification questions one issue at a time, and append only the answers I provide to the Canvas. Do not invent missing details.
+
+If relevant, use my prior, consented feedback in Glean Memory as a coaching baseline. Briefly identify one note-taking habit that has improved and any recurring clarity gap that still needs attention. Track only note-quality patterns (for example timestamps, ticket context, intervention classes, or recovery details); do not retain or restate resident names, health information, or other session-specific personal information as feedback history.
+
+Give concise, practical suggestions in chat after the Canvas. When the clarification is complete, I will copy the completed Canvas into the daily-notes organiser.
+
+Raw quick notes:
+[PASTE UNEDITED QUICK NOTES HERE]</pre>
+          <div class="copy-row"><span class="hint">Input: raw, unedited quick notes</span><button class="copy">Copy prompt</button></div>
+        </div>
+      </article>
+
+      <article class="card" id="organiser-card">
+        <div class="card-head" role="button" tabindex="0" aria-expanded="false">
+          <span class="number">2</span>
+          <div class="title-zone"><h2>cs-daily-notes-organiser</h2><p class="desc">Turn the clarified notes into the standard daily Markdown document.</p></div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="card-body">
+          <p class="how">Paste this into the same Glean conversation after feedback is complete. Replace the placeholder with the completed Canvas content from step 1.</p>
+          <pre>Use the cs-daily-notes-organiser skill to turn the Customer Success notes below into the standard Daily Notes Markdown artifact.
+
+Follow the skill's template and formatting rules exactly. Treat this input as the completed notes from the quick-notes feedback step. Preserve provided facts and timestamps, do not fabricate missing details, keep every T | issue in chronological context and in the Technical Issues roll-up, and use TBC rather than inferring an intervention class. Include the summary and end-of-day sections required by the skill.
+
+Return only the finished .md daily-notes artifact. I will copy the full artifact into two separate Glean tabs: one for ticket drafting and one for the daily email.
+
+Completed notes Canvas:
+[PASTE THE COMPLETE STEP-1 CANVAS HERE]</pre>
+          <div class="copy-row"><span class="hint">Output: the canonical Daily Notes Markdown</span><button class="copy">Copy prompt</button></div>
+        </div>
+      </article>
+
+      <p class="notice"><strong>Important handoff:</strong> after step 1, copy the completed notes Canvas (including any clarifications, not the chat advice) into step 2. Then copy the full Markdown output from step 2 into each of the two separate Glean tabs for steps 3 and 4.</p>
+
+      <article class="card" id="tickets-card">
+        <div class="card-head" role="button" tabindex="0" aria-expanded="false">
+          <span class="number">3</span>
+          <div class="title-zone"><h2>cs-ticket-generator</h2><p class="desc">In a new Glean tab, draft and match tickets from the organised daily notes.</p></div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="card-body">
+          <p class="how">Open a separate Glean tab. Paste this prompt and replace the placeholder with the entire Markdown artifact from step 2. Review every draft before creating or commenting on a ticket.</p>
+          <pre>Use the cs-ticket-generator skill to process the organised Customer Success Daily Notes below.
+
+Extract only issues explicitly marked T |. Follow the skill's hardware/software classification, Jira matching, version, duplicate, resolved-issue, commit-hash, and output rules exactly. Do not create tickets or post messages; produce the required interactive ticket draft packet so I can review the recommended action and drafts first. Do not invent any missing details.
+
+Organised Daily Notes:
+[PASTE THE COMPLETE STEP-2 MARKDOWN HERE]</pre>
+          <div class="copy-row"><span class="hint">Input: full step-2 Markdown · Output: reviewable ticket draft packet</span><button class="copy">Copy prompt</button></div>
+        </div>
+      </article>
+
+      <article class="card" id="email-card">
+        <div class="card-head" role="button" tabindex="0" aria-expanded="false">
+          <span class="number">4</span>
+          <div class="title-zone"><h2>cs-daily-email-generator</h2><p class="desc">In a second new Glean tab, create the Lifestyle Manager daily update email.</p></div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="card-body">
+          <p class="how">Open another separate Glean tab. Fill in the three details below if Glean does not already know them, then paste the entire Markdown artifact from step 2.</p>
+          <pre>Use the cs-daily-email-generator skill to create the Lifestyle Manager daily update email from the organised Customer Success Daily Notes below.
+
+Use only resident interactions marked GS | or 1:1 |. Follow the skill's required email structure and writing rules exactly: keep summaries factual and concise, do not include technical issues, do not invent details, and return the required .email artifact.
+
+Required details (fill these in if they are not already known):
+- Aged Care Home Name: [HOME NAME]
+- CS Staff Name: [YOUR NAME]
+- CS Staff Phone Number: [YOUR PHONE NUMBER]
+
+Organised Daily Notes:
+[PASTE THE COMPLETE STEP-2 MARKDOWN HERE]</pre>
+          <div class="copy-row"><span class="hint">Input: full step-2 Markdown · Output: Lifestyle Manager email artifact</span><button class="copy">Copy prompt</button></div>
+        </div>
+      </article>
+    </section>
+    <footer class="footer">
+      <p>Skills created by Eddie T, Sarah H, and Oscar T.</p>
+      <p>Always proofread the generated notes, ticket drafts, and email before sharing or creating records.</p>
+    </footer>
+  </main>
+  <script>
+    async function copyText(value) {
+      try { await navigator.clipboard.writeText(value); return true; } catch (_) {}
+      const area = document.createElement('textarea');
+      area.value = value; area.style.position = 'fixed'; area.style.left = '-9999px';
+      document.body.append(area); area.select(); const ok = document.execCommand('copy'); area.remove(); return ok;
+    }
+    document.querySelectorAll('.card').forEach(card => {
+      const head = card.querySelector('.card-head');
+      const toggle = () => { const open = card.classList.toggle('open'); head.setAttribute('aria-expanded', open); };
+      head.addEventListener('click', toggle);
+      head.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); } });
+      card.querySelector('.copy').addEventListener('click', async () => {
+        const button = card.querySelector('.copy');
+        const original = button.textContent;
+        const copied = await copyText(card.querySelector('pre').textContent);
+        button.textContent = copied ? 'Copied' : 'Copy failed';
+        setTimeout(() => { button.textContent = original; }, 1600);
+      });
+    });
+    document.querySelectorAll('[data-jump]').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        const card = document.getElementById(link.dataset.jump);
+        if (!card) return;
+        card.classList.add('open');
+        card.querySelector('.card-head').setAttribute('aria-expanded', 'true');
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => card.querySelector('.copy').focus({ preventScroll: true }), 450);
+      });
+    });
+  </script>
+</body>
+</html>
