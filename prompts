@@ -147,7 +147,7 @@ Completed notes Canvas:
         </div>
       </article>
 
-      <p class="notice"><strong>Important handoff:</strong> after step 1, copy the completed notes Canvas (including any clarifications, not the chat advice) into step 2. Then copy the full Markdown output from step 2 into each of the two separate Glean tabs for steps 3 and 4.</p>
+      <p class="notice"><strong>Important:</strong> after step 1, copy the completed notes Canvas (including any clarifications, not the chat advice) into step 2. Then copy the full output from step 2 into two separate Glean tabs for steps 3 and 4.</p>
 
       <article class="card" id="tickets-card">
         <div class="card-head" role="button" tabindex="0" aria-expanded="false">
