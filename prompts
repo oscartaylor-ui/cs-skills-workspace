@@ -81,10 +81,10 @@
     <p class="lead"><strong>Please reach out to Sarah or Oscar for any questions regarding <a href="https://andromedarobotics.slack.com/archives/C0BNU87BAJ2">software bugs or feedback</a>.</strong></p>
 
     <section class="workflow" aria-label="Workflow order">
-      <a class="flow-step" href="#feedback-card" data-jump="feedback-card"><strong>1. Quick notes feedback</strong>Review and clarify raw notes.</a>
-      <a class="flow-step" href="#organiser-card" data-jump="organiser-card"><strong>2. Daily notes organiser</strong>Create the canonical daily Markdown.</a>
+      <a class="flow-step" href="#feedback-card" data-jump="feedback-card"><strong>1. Feedback on Daily Notes</strong>Provides CS with a structured way to review and improve daily notes.</a>
+      <a class="flow-step" href="#organiser-card" data-jump="organiser-card"><strong>2. Organise Daily Notes</strong>Creates a standardised format for daily notes to export to Google Drive.</a>
       <a class="flow-step" href="#tickets-card" data-jump="tickets-card"><strong>3. Ticket generator</strong>Draft tickets from technical issues.</a>
-      <a class="flow-step" href="#email-card" data-jump="email-card"><strong>4. Daily email generator</strong>Create the Lifestyle Manager email.</a>
+      <a class="flow-step" href="#email-card" data-jump="email-card"><strong>4. Daily Email Generator</strong>Create the Lifestyle Manager email.</a>
     </section>
 
     <section class="personalisation" aria-labelledby="personalisation-title">
@@ -106,7 +106,7 @@
       <article class="card open" id="feedback-card">
         <div class="card-head" role="button" tabindex="0" aria-expanded="true">
           <span class="number">1</span>
-          <div class="title-zone"><h2>cs-quick-notes-feedback</h2><p class="desc">Use before organising notes to identify missing operational or ticket context.</p></div>
+          <div class="title-zone"><h2>Feedback on Daily Notes</h2><p class="desc">Use before organising notes to identify missing operational or ticket context.</p></div>
           <span class="chevron">›</span>
         </div>
         <div class="card-body">
@@ -130,7 +130,7 @@ Raw quick notes:
       <article class="card" id="organiser-card">
         <div class="card-head" role="button" tabindex="0" aria-expanded="false">
           <span class="number">2</span>
-          <div class="title-zone"><h2>cs-daily-notes-organiser</h2><p class="desc">Turn the clarified notes into the standard daily Markdown document.</p></div>
+          <div class="title-zone"><h2>Organise Daily Notes</h2><p class="desc">Turn the clarified notes into the standard daily Markdown document.</p></div>
           <span class="chevron">›</span>
         </div>
         <div class="card-body">
@@ -152,7 +152,7 @@ Completed notes Canvas:
       <article class="card" id="tickets-card">
         <div class="card-head" role="button" tabindex="0" aria-expanded="false">
           <span class="number">3</span>
-          <div class="title-zone"><h2>cs-ticket-generator</h2><p class="desc">In a new Glean tab, draft and match tickets from the organised daily notes.</p></div>
+          <div class="title-zone"><h2>Ticket Generator</h2><p class="desc">In a new Glean tab, draft and match tickets from the organised daily notes.</p></div>
           <span class="chevron">›</span>
         </div>
         <div class="card-body">
@@ -170,7 +170,7 @@ Organised Daily Notes:
       <article class="card" id="email-card">
         <div class="card-head" role="button" tabindex="0" aria-expanded="false">
           <span class="number">4</span>
-          <div class="title-zone"><h2>cs-daily-email-generator</h2><p class="desc">In a second new Glean tab, create the Lifestyle Manager daily update email.</p></div>
+          <div class="title-zone"><h2>Daily Email Generator</h2><p class="desc">In a second new Glean tab, create the Lifestyle Manager daily update email.</p></div>
           <span class="chevron">›</span>
         </div>
         <div class="card-body">
